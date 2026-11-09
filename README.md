@@ -158,15 +158,15 @@ proyecto/
 
 ### Commits Realizados
 - [x] **Commit 1:** Inicializar proyecto y configuración base
-- [ ] **Commit 2:** Configurar Entity Framework y SQL Server
-- [ ] **Commit 3:** Implementar modelos de datos (Parte 1)
-- [ ] **Commit 4:** Implementar modelos de datos (Parte 2)
-- [ ] **Commit 5:** Configurar ASP.NET Core Identity
-- [ ] **Commit 6:** Crear migración inicial de base de datos
-- [ ] **Commit 7:** Implementar repositorios (Parte 1)
-- [ ] **Commit 8:** Implementar repositorios (Parte 2)
-- [ ] **Commit 9:** Implementar servicios de negocio (Parte 1)
-- [ ] **Commit 10:** Implementar servicios de negocio (Parte 2)
+- [x] **Commit 2:** Configurar Entity Framework y SQL Server
+- [x] **Commit 3:** Implementar modelos de datos (Parte 1)
+- [x] **Commit 4:** Implementar modelos de datos (Parte 2)
+- [x] **Commit 5:** Configurar ASP.NET Core Identity
+- [x] **Commit 6:** Crear migración inicial de base de datos
+- [x] **Commit 7:** Implementar repositorios (Parte 1)
+- [x] **Commit 8:** Implementar repositorios (Parte 2)
+- [x] **Commit 9:** Implementar servicios de negocio (Parte 1)
+- [x] **Commit 10:** Implementar servicios de negocio (Parte 2) - **BACKEND COMPLETO** ✅
 
 ---
 

@@ -26,6 +26,8 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 // Registrar servicios de negocio
 builder.Services.AddScoped<ICursoService, CursoService>();
 builder.Services.AddScoped<ILeccionService, LeccionService>();
+builder.Services.AddScoped<IInscripcionService, InscripcionService>();
+builder.Services.AddScoped<IProgresoService, ProgresoService>();
 
 // Configurar ASP.NET Core Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
