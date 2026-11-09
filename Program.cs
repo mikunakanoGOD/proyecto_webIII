@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PortalMicrocursos.Data;
 using PortalMicrocursos.Models;
+using PortalMicrocursos.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,15 @@ builder.Services.AddControllersWithViews();
 // Configurar Entity Framework Core con SQL Server
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Registrar repositorios
+builder.Services.AddScoped<ICursoRepository, CursoRepository>();
+builder.Services.AddScoped<ILeccionRepository, LeccionRepository>();
+builder.Services.AddScoped<IInscripcionRepository, InscripcionRepository>();
+builder.Services.AddScoped<ILeccionCompletadaRepository, LeccionCompletadaRepository>();
+
+// Registrar Unit of Work
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Configurar ASP.NET Core Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
