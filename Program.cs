@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PortalMicrocursos.Data;
 using PortalMicrocursos.Models;
 using PortalMicrocursos.Repositories;
+using PortalMicrocursos.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,10 @@ builder.Services.AddScoped<ILeccionCompletadaRepository, LeccionCompletadaReposi
 
 // Registrar Unit of Work
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+// Registrar servicios de negocio
+builder.Services.AddScoped<ICursoService, CursoService>();
+builder.Services.AddScoped<ILeccionService, LeccionService>();
 
 // Configurar ASP.NET Core Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
