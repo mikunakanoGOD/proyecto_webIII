@@ -1,0 +1,154 @@
+@model PortalMicrocursos.Models.Leccion
+@using PortalMicrocursos.Models
+@{
+    ViewData["Title"] = Model.Titulo;
+    var curso = ViewData["Curso"] as Curso;
+    var todasLasLecciones = ViewData["TodasLasLecciones"] as IEnumerable<Leccion> ?? Enumerable.Empty<Leccion>();
+    var leccionesCompletadas = ViewData["LeccionesCompletadas"] as List<int> ?? new List<int>();
+    var siguiente = ViewData["LeccionSiguiente"] as Leccion;
+    var anterior = ViewData["LeccionAnterior"] as Leccion;
+    double progreso = ViewData["Progreso"] is double p ? p : 0;
+    bool estaCompletada = ViewData["EstaCompletada"] is bool c && c;
+}
+
+<div class="container-fluid px-0">
+    <div class="row g-0" style="min-height: calc(100vh - 130px)">
+
+        <!-- Panel lateral de lecciones -->
+        <div class="col-md-3 border-end bg-white" style="min-height: calc(100vh - 130px)">
+            <div class="lecciones-sidebar">
+                <div class="sidebar-header">
+                    <small class="opacity-75">CURSO</small>
+                    <div class="fw-semibold">@curso?.Titulo</div>
+                </div>
+
+                <!-- Barra de progreso general -->
+                <div class="p-3 border-bottom bg-light">
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span class="text-muted">Tu progreso</span>
+                        <span class="fw-bold">@progreso.ToString("F0")%</span>
+                    </div>
+                    <div class="progress" style="height:6px">
+                        <div class="progress-bar progress-bar-custom"
+                             role="progressbar"
+                             style="width:@progreso.ToString("F0")%"
+                             aria-valuenow="@progreso"
+                             aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de lecciones -->
+                @foreach (var lec in todasLasLecciones.OrderBy(l => l.Orden))
+                {
+                    bool esActual = lec.Id == Model.Id;
+                    bool estaCompletadaLec = leccionesCompletadas.Contains(lec.Id);
+
+                    <a asp-action="Ver"
+                       asp-route-cursoId="@curso?.Id"
+                       asp-route-leccionId="@lec.Id"
+                       class="leccion-item text-decoration-none @(esActual ? "activa" : "") @(estaCompletadaLec ? "completada" : "")">
+                        <span class="text-muted small me-1">@lec.Orden.</span>
+                        <span class="flex-grow-1 small @(esActual ? "fw-semibold text-primary" : "text-dark")">
+                            @lec.Titulo
+                        </span>
+                        @if (estaCompletadaLec)
+                        {
+                            <i class="bi bi-check-circle-fill text-success ms-auto small"></i>
+                        }
+                        else if (esActual)
+                        {
+                            <i class="bi bi-play-circle-fill text-primary ms-auto small"></i>
+                        }
+                    </a>
+                }
+            </div>
+        </div>
+
+        <!-- Contenido principal de la lección -->
+        <div class="col-md-9 p-4">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Inscripciones" asp-action="MisCursos">Mis Cursos</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Cursos" asp-action="Detalle" asp-route-id="@curso?.Id">@curso?.Titulo</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">@Model.Titulo</li>
+                </ol>
+            </nav>
+
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <div>
+                    <span class="badge bg-secondary mb-2">Lección @Model.Orden</span>
+                    <h1 class="h2 fw-bold">@Model.Titulo</h1>
+                </div>
+                <!-- Botón completar -->
+                @if (!estaCompletada)
+                {
+                    <form asp-action="MarcarCompletada" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="leccionId" value="@Model.Id" />
+                        <input type="hidden" name="cursoId" value="@curso?.Id" />
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-lg me-2"></i>Marcar como completada
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <span class="badge bg-success fs-6 py-2 px-3">
+                        <i class="bi bi-check-circle-fill me-2"></i>Completada
+                    </span>
+                }
+            </div>
+
+            <!-- Contenido HTML de la lección -->
+            <div class="leccion-contenido mb-4">
+                @Html.Raw(Model.Contenido)
+            </div>
+
+            <!-- Navegación entre lecciones -->
+            <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                @if (anterior != null)
+                {
+                    <a asp-action="Ver" asp-route-cursoId="@curso?.Id" asp-route-leccionId="@anterior.Id"
+                       class="btn btn-outline-secondary">
+                        <i class="bi bi-chevron-left me-2"></i>Anterior
+                        <div class="small text-muted d-none d-md-block">@anterior.Titulo</div>
+                    </a>
+                }
+                else
+                {
+                    <span></span>
+                }
+
+                <div class="text-center text-muted small">
+                    @Model.Orden de @todasLasLecciones.Count()
+                </div>
+
+                @if (siguiente != null)
+                {
+                    <a asp-action="Ver" asp-route-cursoId="@curso?.Id" asp-route-leccionId="@siguiente.Id"
+                       class="btn btn-primary">
+                        Siguiente <i class="bi bi-chevron-right ms-2"></i>
+                        <div class="small d-none d-md-block opacity-75">@siguiente.Titulo</div>
+                    </a>
+                }
+                else if (progreso >= 100)
+                {
+                    <a asp-controller="Inscripciones" asp-action="MisCursos"
+                       class="btn btn-success">
+                        <i class="bi bi-trophy-fill me-2"></i>¡Curso completado!
+                    </a>
+                }
+                else
+                {
+                    <span></span>
+                }
+            </div>
+        </div>
+    </div>
+</div>
