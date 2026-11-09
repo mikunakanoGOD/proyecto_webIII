@@ -1,31 +1,259 @@
+/* =============================================
+   PortalMicrocursos - Estilos base
+   ============================================= */
+
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    html {
+        font-size: 16px;
+    }
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+/* --- Focus styles --- */
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus,
+.form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+/* --- Navbar --- */
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #2c3e50 !important;
+    letter-spacing: 0.5px;
+}
+
+.navbar {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.navbar-nav .nav-link {
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #007bff !important;
+}
+
+/* --- Cards de cursos --- */
+.curso-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+.curso-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+.curso-card .card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px 8px 0 0 !important;
+}
+
+/* --- Badges de nivel --- */
+.badge-basico {
+    background-color: #28a745;
+    color: white;
+}
+
+.badge-intermedio {
+    background-color: #fd7e14;
+    color: white;
+}
+
+.badge-avanzado {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* --- Barra de progreso personalizada --- */
+.progress-bar-custom {
+    background: linear-gradient(90deg, #28a745, #20c997);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+/* --- Hero section del Home --- */
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 60px 0;
+    margin-bottom: 40px;
+    border-radius: 0 0 16px 16px;
+}
+
+.hero-section h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.hero-section p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+/* --- Lección contenido --- */
+.leccion-contenido {
+    background: white;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    line-height: 1.8;
+}
+
+.leccion-contenido h1, .leccion-contenido h2, .leccion-contenido h3 {
+    color: #2c3e50;
+    margin-top: 1.5rem;
+}
+
+.leccion-contenido code {
+    background: #f8f9fa;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.leccion-contenido pre {
+    background: #2d2d2d;
+    color: #f8f8f2;
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+/* --- Panel lateral de lecciones --- */
+.lecciones-sidebar {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    overflow: hidden;
+}
+
+.lecciones-sidebar .sidebar-header {
+    background: #2c3e50;
+    color: white;
+    padding: 12px 16px;
+    font-weight: 600;
+}
+
+.lecciones-sidebar .leccion-item {
+    padding: 10px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.lecciones-sidebar .leccion-item:hover {
+    background: #f8f9fa;
+}
+
+.lecciones-sidebar .leccion-item.activa {
+    background: #e8f4fd;
+    border-left: 4px solid #007bff;
+}
+
+.lecciones-sidebar .leccion-item.completada {
+    color: #28a745;
+}
+
+/* --- Admin panel --- */
+.admin-stat-card {
+    border-left: 4px solid #007bff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+/* --- Footer --- */
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: #2c3e50;
+    color: #adb5bd;
+    padding: 16px 0;
+}
+
+.footer a {
+    color: #adb5bd;
+    text-decoration: none;
+}
+
+.footer a:hover {
+    color: white;
+}
+
+/* --- Formularios --- */
+.form-floating > .form-control-plaintext::placeholder,
+.form-floating > .form-control::placeholder {
+    color: var(--bs-secondary-color);
+    text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder,
+.form-floating > .form-control:focus::placeholder {
+    text-align: start;
+}
+
+.card-form {
+    max-width: 480px;
+    margin: 0 auto;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    border: none;
+    border-radius: 12px;
+}
+
+/* --- Alertas --- */
+.alert {
+    border-radius: 8px;
+}
+
+/* --- Tabla admin --- */
+.table-admin thead {
+    background: #2c3e50;
+    color: white;
+}
+
+/* --- Utilidades --- */
+.text-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.section-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+}
+
+.section-title::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    margin-top: 8px;
+    border-radius: 2px;
 }
