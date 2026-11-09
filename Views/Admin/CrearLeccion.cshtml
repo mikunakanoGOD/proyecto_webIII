@@ -1,0 +1,75 @@
+@model PortalMicrocursos.Models.Leccion
+@{
+    ViewData["Title"] = "Nueva lección";
+    var curso = ViewData["Curso"] as PortalMicrocursos.Models.Curso;
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-action="Index">Panel Admin</a></li>
+                    <li class="breadcrumb-item"><a asp-action="Lecciones" asp-route-id="@curso?.Id">Lecciones — @curso?.Titulo</a></li>
+                    <li class="breadcrumb-item active">Nueva lección</li>
+                </ol>
+            </nav>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h2 class="h4 fw-bold mb-0">
+                        <i class="bi bi-plus-circle me-2 text-primary"></i>Nueva lección
+                        <small class="text-muted fw-normal"> — @curso?.Titulo</small>
+                    </h2>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="CrearLeccion" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="CursoId" />
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-9">
+                                <label asp-for="Titulo" class="form-label fw-semibold"></label>
+                                <input asp-for="Titulo" class="form-control" placeholder="Ej: Introducción al tema" />
+                                <span asp-validation-for="Titulo" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-3">
+                                <label asp-for="Orden" class="form-label fw-semibold">Orden</label>
+                                <input asp-for="Orden" type="number" min="1" max="1000" class="form-control" />
+                                <span asp-validation-for="Orden" class="text-danger small"></span>
+                                <div class="form-text">Posición en el curso</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Contenido" class="form-label fw-semibold">
+                                Contenido
+                                <span class="text-muted fw-normal small">(HTML permitido)</span>
+                            </label>
+                            <textarea asp-for="Contenido" class="form-control font-monospace" rows="14"
+                                      placeholder="<h2>Título</h2>&#10;<p>Contenido de la lección...</p>&#10;<pre><code>// código de ejemplo</code></pre>"></textarea>
+                            <span asp-validation-for="Contenido" class="text-danger small"></span>
+                            <div class="form-text">
+                                Puedes usar etiquetas HTML: &lt;h2&gt;, &lt;p&gt;, &lt;ul&gt;, &lt;pre&gt;&lt;code&gt;, &lt;strong&gt;, &lt;em&gt;, etc.
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-save me-2"></i>Crear lección
+                            </button>
+                            <a asp-action="Lecciones" asp-route-id="@curso?.Id" class="btn btn-outline-secondary">
+                                Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

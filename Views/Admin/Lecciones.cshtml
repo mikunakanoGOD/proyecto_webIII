@@ -1,0 +1,96 @@
+@model IEnumerable<PortalMicrocursos.Models.Leccion>
+@{
+    ViewData["Title"] = "Gestionar Lecciones";
+    var curso = ViewData["Curso"] as PortalMicrocursos.Models.Curso;
+}
+
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Panel Admin</a></li>
+            <li class="breadcrumb-item"><a asp-action="Cursos">Cursos</a></li>
+            <li class="breadcrumb-item active">Lecciones — @curso?.Titulo</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="section-title mb-0">Lecciones</h1>
+            <p class="text-muted mb-0">Curso: <strong>@curso?.Titulo</strong></p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="EditarCurso" asp-route-id="@curso?.Id" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-pencil me-1"></i>Editar curso
+            </a>
+            <a asp-action="CrearLeccion" asp-route-id="@curso?.Id" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-2"></i>Nueva lección
+            </a>
+        </div>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="card border-0 shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-admin table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Orden</th>
+                            <th>Título</th>
+                            <th>Contenido (preview)</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var leccion in Model.OrderBy(l => l.Orden))
+                        {
+                            <tr>
+                                <td class="align-middle text-center">
+                                    <span class="badge bg-primary rounded-circle p-2">@leccion.Orden</span>
+                                </td>
+                                <td class="fw-semibold align-middle">@leccion.Titulo</td>
+                                <td class="align-middle text-muted small">
+                                    @{
+                                        // Strip HTML for preview
+                                        var preview = System.Text.RegularExpressions.Regex.Replace(leccion.Contenido, "<[^>]+>", " ");
+                                        preview = preview.Length > 80 ? preview.Substring(0, 80) + "…" : preview;
+                                    }
+                                    @preview
+                                </td>
+                                <td class="align-middle">
+                                    <div class="d-flex gap-1 justify-content-center">
+                                        <a asp-action="EditarLeccion" asp-route-id="@leccion.Id"
+                                           class="btn btn-sm btn-outline-secondary" title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form asp-action="EliminarLeccion" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@leccion.Id" />
+                                            <input type="hidden" name="cursoId" value="@curso?.Id" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar"
+                                                    onclick="return confirm('¿Eliminar la lección «@leccion.Titulo»?')">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <i class="bi bi-journal-x" style="font-size:4rem;color:#ccc"></i>
+            <h3 class="mt-3 text-muted">Sin lecciones aún</h3>
+            <p class="text-muted">Agrega la primera lección para poder publicar el curso.</p>
+            <a asp-action="CrearLeccion" asp-route-id="@curso?.Id" class="btn btn-primary mt-2">
+                <i class="bi bi-plus-circle me-2"></i>Agregar primera lección
+            </a>
+        </div>
+    }
+</div>
