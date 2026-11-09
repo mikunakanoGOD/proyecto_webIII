@@ -1,0 +1,74 @@
+@model PortalMicrocursos.ViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Crear cuenta";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card card-form p-4">
+                <div class="text-center mb-4">
+                    <i class="bi bi-person-plus-fill" style="font-size:2.5rem;color:#667eea"></i>
+                    <h2 class="mt-2 fw-bold">Crear cuenta</h2>
+                    <p class="text-muted">Únete a PortalMicrocursos y empieza a aprender</p>
+                </div>
+
+                <form asp-action="Register" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="NombreCompleto" class="form-label fw-semibold"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                            <input asp-for="NombreCompleto" class="form-control" placeholder="Tu nombre completo" autocomplete="name" />
+                        </div>
+                        <span asp-validation-for="NombreCompleto" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label fw-semibold"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                            <input asp-for="Email" class="form-control" placeholder="tu@correo.com" autocomplete="email" />
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label fw-semibold"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                            <input asp-for="Password" class="form-control" placeholder="Mínimo 6 caracteres" autocomplete="new-password" />
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                        <div class="form-text">Debe contener mayúscula, minúscula y un número.</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="ConfirmPassword" class="form-label fw-semibold"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                            <input asp-for="ConfirmPassword" class="form-control" placeholder="Repite tu contraseña" autocomplete="new-password" />
+                        </div>
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100 py-2 fw-semibold">
+                        <i class="bi bi-person-check me-2"></i>Crear cuenta
+                    </button>
+                </form>
+
+                <hr class="my-4" />
+                <p class="text-center text-muted mb-0">
+                    ¿Ya tienes cuenta?
+                    <a asp-action="Login" class="fw-semibold">Inicia sesión</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
