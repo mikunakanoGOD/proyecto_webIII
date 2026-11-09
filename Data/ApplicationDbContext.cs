@@ -1,26 +1,32 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PortalMicrocursos.Models;
 
 namespace PortalMicrocursos.Data
 {
-    public class ApplicationDbContext : DbContext
+    /// <summary>
+    /// DbContext principal que hereda de IdentityDbContext para integrar ASP.NET Core Identity
+    /// Incluye todas las tablas de Identity (AspNetUsers, AspNetRoles, etc.) automáticamente
+    /// </summary>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
 
-        // DbSets para las entidades del sistema
+        // DbSets para las entidades personalizadas del sistema
         public DbSet<Curso> Cursos { get; set; }
         public DbSet<Leccion> Lecciones { get; set; }
         public DbSet<Inscripcion> Inscripciones { get; set; }
         public DbSet<LeccionCompletada> LeccionesCompletadas { get; set; }
 
-        // Nota: Los DbSets de Identity (AspNetUsers, AspNetRoles, etc.) 
-        // se agregarán automáticamente en la Fase 5 cuando heredemos de IdentityDbContext
+        // Los DbSets de Identity (AspNetUsers, AspNetRoles, AspNetUserRoles, etc.) 
+        // se incluyen automáticamente al heredar de IdentityDbContext<ApplicationUser>
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Llamar al método base para configurar Identity
             base.OnModelCreating(modelBuilder);
 
             // Configuración de la entidad Curso
@@ -34,7 +40,7 @@ namespace PortalMicrocursos.Data
                 entity.Property(c => c.EstaPublicado).HasDefaultValue(false);
                 entity.Property(c => c.FechaCreacion).HasDefaultValueSql("GETDATE()");
 
-                // Índice para búsquedas por título
+                // Índices para búsquedas eficientes
                 entity.HasIndex(c => c.Titulo);
                 entity.HasIndex(c => c.EstaPublicado);
             });
@@ -53,7 +59,7 @@ namespace PortalMicrocursos.Data
                       .HasForeignKey(l => l.CursoId)
                       .OnDelete(DeleteBehavior.Cascade); // Si se borra un curso, se borran sus lecciones
 
-                // Índice compuesto para búsquedas por curso y orden
+                // Índice compuesto único: No puede haber dos lecciones con el mismo orden en un curso
                 entity.HasIndex(l => new { l.CursoId, l.Orden }).IsUnique();
             });
 
@@ -64,6 +70,12 @@ namespace PortalMicrocursos.Data
                 entity.Property(i => i.UsuarioId).IsRequired();
                 entity.Property(i => i.CursoId).IsRequired();
                 entity.Property(i => i.FechaInscripcion).HasDefaultValueSql("GETDATE()");
+
+                // Relación: Una Inscripción pertenece a un Usuario (Identity)
+                entity.HasOne(i => i.Usuario)
+                      .WithMany(u => u.Inscripciones)
+                      .HasForeignKey(i => i.UsuarioId)
+                      .OnDelete(DeleteBehavior.Cascade);
 
                 // Relación: Una Inscripción pertenece a un Curso
                 entity.HasOne(i => i.Curso)
@@ -83,6 +95,12 @@ namespace PortalMicrocursos.Data
                 entity.Property(lc => lc.LeccionId).IsRequired();
                 entity.Property(lc => lc.FechaCompletada).HasDefaultValueSql("GETDATE()");
 
+                // Relación: Una LecciónCompletada pertenece a un Usuario (Identity)
+                entity.HasOne(lc => lc.Usuario)
+                      .WithMany(u => u.LeccionesCompletadas)
+                      .HasForeignKey(lc => lc.UsuarioId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
                 // Relación: Una LecciónCompletada pertenece a una Lección
                 entity.HasOne(lc => lc.Leccion)
                       .WithMany(l => l.LeccionesCompletadas)
@@ -93,8 +111,39 @@ namespace PortalMicrocursos.Data
                 entity.HasIndex(lc => new { lc.UsuarioId, lc.LeccionId }).IsUnique();
             });
 
-            // Nota: Las relaciones con ApplicationUser se configurarán en la Fase 5
-            // cuando el DbContext herede de IdentityDbContext<ApplicationUser>
+            // Personalizar nombres de tablas de Identity (opcional)
+            // Si prefieres mantener los nombres por defecto (AspNetUsers, AspNetRoles, etc.), 
+            // puedes comentar o eliminar estas líneas
+            /*
+            modelBuilder.Entity<ApplicationUser>(entity =>
+            {
+                entity.ToTable("Usuarios");
+            });
+            modelBuilder.Entity<IdentityRole>(entity =>
+            {
+                entity.ToTable("Roles");
+            });
+            modelBuilder.Entity<IdentityUserRole<string>>(entity =>
+            {
+                entity.ToTable("UsuariosRoles");
+            });
+            modelBuilder.Entity<IdentityUserClaim<string>>(entity =>
+            {
+                entity.ToTable("UsuariosClaims");
+            });
+            modelBuilder.Entity<IdentityRoleClaim<string>>(entity =>
+            {
+                entity.ToTable("RolesClaims");
+            });
+            modelBuilder.Entity<IdentityUserLogin<string>>(entity =>
+            {
+                entity.ToTable("UsuariosLogins");
+            });
+            modelBuilder.Entity<IdentityUserToken<string>>(entity =>
+            {
+                entity.ToTable("UsuariosTokens");
+            });
+            */
         }
     }
 }
