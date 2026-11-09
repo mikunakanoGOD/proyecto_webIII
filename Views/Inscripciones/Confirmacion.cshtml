@@ -1,0 +1,39 @@
+@model PortalMicrocursos.Models.Curso
+@{
+    ViewData["Title"] = "Inscripción confirmada";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 text-center">
+            <i class="bi bi-check-circle-fill text-success" style="font-size:5rem"></i>
+            <h1 class="fw-bold mt-3">¡Inscripción confirmada!</h1>
+            <p class="lead text-muted">Ya tienes acceso a <strong>@Model.Titulo</strong>.</p>
+
+            <div class="card border-0 shadow-sm mt-4 text-start">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-info-circle me-2 text-primary"></i>Detalles del curso</h5>
+                    <p><strong>Nivel:</strong> @Model.Nivel</p>
+                    <p><strong>Duración:</strong> @Model.Duracion minutos</p>
+                    <p class="mb-0"><strong>Lecciones:</strong> @(Model.Lecciones?.Count ?? 0) lecciones disponibles</p>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center gap-3 mt-4">
+                @if (Model.Lecciones != null && Model.Lecciones.Any())
+                {
+                    var primeraLeccion = Model.Lecciones.OrderBy(l => l.Orden).First();
+                    <a asp-controller="Lecciones" asp-action="Ver"
+                       asp-route-cursoId="@Model.Id" asp-route-leccionId="@primeraLeccion.Id"
+                       class="btn btn-success btn-lg fw-semibold">
+                        <i class="bi bi-play-fill me-2"></i>Empezar primera lección
+                    </a>
+                }
+                <a asp-controller="Inscripciones" asp-action="MisCursos"
+                   class="btn btn-outline-primary btn-lg">
+                    <i class="bi bi-journal-bookmark me-2"></i>Ver mis cursos
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

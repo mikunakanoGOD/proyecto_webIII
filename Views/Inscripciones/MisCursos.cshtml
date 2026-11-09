@@ -1,0 +1,110 @@
+@model IEnumerable<PortalMicrocursos.Models.Inscripcion>
+@{
+    ViewData["Title"] = "Mis Cursos";
+    var progresoPorCurso = ViewData["ProgresoPorCurso"] as Dictionary<int, double> ?? new Dictionary<int, double>();
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="section-title mb-0">Mis Cursos</h1>
+        <a asp-controller="Cursos" asp-action="Index" class="btn btn-outline-primary">
+            <i class="bi bi-plus-circle me-2"></i>Explorar más cursos
+        </a>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var inscripcion in Model)
+            {
+                var curso = inscripcion.Curso;
+                if (curso == null) continue;
+
+                double progreso = progresoPorCurso.TryGetValue(curso.Id, out var p) ? p : 0;
+                bool completado = progreso >= 100;
+
+                <div class="col">
+                    <div class="card curso-card h-100">
+                        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                            <span class="fw-semibold small">
+                                <i class="bi bi-play-circle-fill me-1"></i>@curso.Nivel
+                            </span>
+                            @if (completado)
+                            {
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-lg me-1"></i>Completado
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-primary">En progreso</span>
+                            }
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title fw-bold">@curso.Titulo</h5>
+                            <p class="card-text text-muted small flex-grow-1">
+                                @(curso.Descripcion?.Length > 100 ? curso.Descripcion.Substring(0, 100) + "…" : curso.Descripcion)
+                            </p>
+
+                            <!-- Barra de progreso -->
+                            <div class="mt-3">
+                                <div class="d-flex justify-content-between small text-muted mb-1">
+                                    <span>Progreso</span>
+                                    <span class="fw-semibold">@progreso.ToString("F0")%</span>
+                                </div>
+                                <div class="progress" style="height:8px">
+                                    <div class="progress-bar progress-bar-custom"
+                                         role="progressbar"
+                                         style="width:@progreso.ToString("F0")%"
+                                         aria-valuenow="@progreso"
+                                         aria-valuemin="0" aria-valuemax="100">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-muted small mt-2">
+                                <i class="bi bi-calendar3 me-1"></i>
+                                Inscrito el @inscripcion.FechaInscripcion.ToString("dd/MM/yyyy")
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent d-flex gap-2 flex-wrap">
+                            @if (curso.Lecciones != null && curso.Lecciones.Any())
+                            {
+                                var primeraLeccion = curso.Lecciones.OrderBy(l => l.Orden).First();
+                                <a asp-controller="Lecciones" asp-action="Ver"
+                                   asp-route-cursoId="@curso.Id" asp-route-leccionId="@primeraLeccion.Id"
+                                   class="btn btn-primary flex-grow-1">
+                                    <i class="bi bi-play-fill me-1"></i>
+                                    @(progreso > 0 ? "Continuar" : "Empezar")
+                                </a>
+                            }
+                            <a asp-controller="Progreso" asp-action="Detalle" asp-route-id="@curso.Id"
+                               class="btn btn-outline-secondary" title="Ver progreso detallado">
+                                <i class="bi bi-graph-up"></i>
+                            </a>
+                            <form asp-action="Cancelar" method="post"
+                                  onsubmit="return confirm('¿Seguro que deseas cancelar tu inscripción en «@curso.Titulo»?')">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="cursoId" value="@curso.Id" />
+                                <button type="submit" class="btn btn-outline-danger" title="Cancelar inscripción">
+                                    <i class="bi bi-x-circle"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <i class="bi bi-journal-bookmark" style="font-size:5rem;color:#ccc"></i>
+            <h3 class="mt-3 text-muted">Todavía no tienes cursos</h3>
+            <p class="text-muted">Explora el catálogo e inscríbete en los que te interesen.</p>
+            <a asp-controller="Cursos" asp-action="Index" class="btn btn-primary btn-lg mt-2">
+                <i class="bi bi-collection-play me-2"></i>Ver cursos disponibles
+            </a>
+        </div>
+    }
+</div>
