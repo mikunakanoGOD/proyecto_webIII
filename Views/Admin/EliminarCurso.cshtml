@@ -1,0 +1,65 @@
+@model PortalMicrocursos.Models.Curso
+@{
+    ViewData["Title"] = "Eliminar curso";
+    bool puedeEliminar = (bool)(ViewData["PuedeEliminar"] ?? false);
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-action="Index">Panel Admin</a></li>
+                    <li class="breadcrumb-item"><a asp-action="Cursos">Cursos</a></li>
+                    <li class="breadcrumb-item active">Eliminar</li>
+                </ol>
+            </nav>
+
+            <div class="card border-0 shadow-sm border-danger" style="border-top: 4px solid #dc3545 !important;">
+                <div class="card-header bg-danger text-white py-3">
+                    <h2 class="h4 fw-bold mb-0">
+                        <i class="bi bi-exclamation-triangle me-2"></i>Eliminar curso
+                    </h2>
+                </div>
+                <div class="card-body p-4">
+                    <p class="lead mb-1">¿Estás seguro de eliminar este curso?</p>
+                    <p class="text-muted small">Esta acción <strong>no puede deshacerse</strong>. Se eliminarán también todas las lecciones del curso.</p>
+
+                    <div class="bg-light rounded p-3 my-4">
+                        <h5 class="fw-bold mb-1">@Model.Titulo</h5>
+                        <p class="text-muted mb-1">@Model.Descripcion</p>
+                        <div class="d-flex gap-3 text-muted small mt-2">
+                            <span><i class="bi bi-bar-chart me-1"></i>@Model.Nivel</span>
+                            <span><i class="bi bi-clock me-1"></i>@Model.Duracion min</span>
+                            <span><i class="bi bi-list-ul me-1"></i>@(Model.Lecciones?.Count ?? 0) lecciones</span>
+                        </div>
+                    </div>
+
+                    @if (!puedeEliminar)
+                    {
+                        <div class="alert alert-warning">
+                            <i class="bi bi-people-fill me-2"></i>
+                            <strong>No se puede eliminar</strong> este curso porque tiene usuarios inscritos.
+                            Debes despublicarlo primero para que no acepte nuevas inscripciones.
+                        </div>
+                    }
+
+                    <div class="d-flex gap-2 mt-3">
+                        @if (puedeEliminar)
+                        {
+                            <form asp-action="EliminarCurso" asp-route-id="@Model.Id" method="post">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-danger px-4">
+                                    <i class="bi bi-trash me-2"></i>Sí, eliminar definitivamente
+                                </button>
+                            </form>
+                        }
+                        <a asp-action="Cursos" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Cancelar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

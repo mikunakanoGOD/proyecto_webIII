@@ -1,0 +1,131 @@
+@model IEnumerable<PortalMicrocursos.Models.Curso>
+@{
+    ViewData["Title"] = "Panel de Administración";
+    int totalCursos = (int)(ViewData["TotalCursos"] ?? 0);
+    int cursosPublicados = (int)(ViewData["CursosPublicados"] ?? 0);
+    int cursosBorrador = (int)(ViewData["CursosBorrador"] ?? 0);
+}
+
+<div class="container py-4">
+    <h1 class="section-title">Panel de Administración</h1>
+
+    <!-- Tarjetas de estadísticas -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card admin-stat-card border-0 shadow-sm p-4">
+                <div class="d-flex align-items-center gap-3">
+                    <i class="bi bi-collection-fill" style="font-size:2.5rem;color:#667eea"></i>
+                    <div>
+                        <div class="fs-1 fw-bold">@totalCursos</div>
+                        <div class="text-muted">Total de cursos</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card admin-stat-card border-0 shadow-sm p-4" style="border-left-color:#28a745!important">
+                <div class="d-flex align-items-center gap-3">
+                    <i class="bi bi-check-circle-fill" style="font-size:2.5rem;color:#28a745"></i>
+                    <div>
+                        <div class="fs-1 fw-bold">@cursosPublicados</div>
+                        <div class="text-muted">Cursos publicados</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card admin-stat-card border-0 shadow-sm p-4" style="border-left-color:#fd7e14!important">
+                <div class="d-flex align-items-center gap-3">
+                    <i class="bi bi-pencil-square" style="font-size:2.5rem;color:#fd7e14"></i>
+                    <div>
+                        <div class="fs-1 fw-bold">@cursosBorrador</div>
+                        <div class="text-muted">En borrador</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accesos rápidos -->
+    <div class="row g-3 mb-4">
+        <div class="col-auto">
+            <a asp-action="CrearCurso" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-2"></i>Nuevo curso
+            </a>
+        </div>
+        <div class="col-auto">
+            <a asp-action="Cursos" class="btn btn-outline-secondary">
+                <i class="bi bi-collection me-2"></i>Gestionar cursos
+            </a>
+        </div>
+        <div class="col-auto">
+            <a asp-action="Suscriptores" class="btn btn-outline-info">
+                <i class="bi bi-people me-2"></i>Ver suscriptores
+            </a>
+        </div>
+    </div>
+
+    <!-- Tabla resumen -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white fw-bold py-3">
+            <i class="bi bi-table me-2 text-primary"></i>Resumen de cursos
+        </div>
+        <div class="table-responsive">
+            <table class="table table-admin table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Título</th>
+                        <th>Nivel</th>
+                        <th>Duración</th>
+                        <th>Estado</th>
+                        <th>Creado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var curso in Model)
+                    {
+                        <tr>
+                            <td class="text-muted">@curso.Id</td>
+                            <td class="fw-semibold">@curso.Titulo</td>
+                            <td>
+                                @{
+                                    var badgeCls = curso.Nivel switch {
+                                        "Básico" => "badge-basico",
+                                        "Intermedio" => "badge-intermedio",
+                                        "Avanzado" => "badge-avanzado",
+                                        _ => "bg-secondary"
+                                    };
+                                }
+                                <span class="badge @badgeCls">@curso.Nivel</span>
+                            </td>
+                            <td>@curso.Duracion min</td>
+                            <td>
+                                @if (curso.EstaPublicado)
+                                {
+                                    <span class="badge bg-success">Publicado</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">Borrador</span>
+                                }
+                            </td>
+                            <td class="text-muted small">@curso.FechaCreacion.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                <a asp-action="EditarCurso" asp-route-id="@curso.Id"
+                                   class="btn btn-sm btn-outline-secondary me-1" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a asp-action="Lecciones" asp-route-id="@curso.Id"
+                                   class="btn btn-sm btn-outline-info me-1" title="Lecciones">
+                                    <i class="bi bi-list-ul"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

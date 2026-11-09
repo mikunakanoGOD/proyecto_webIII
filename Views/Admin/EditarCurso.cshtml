@@ -1,0 +1,83 @@
+@model PortalMicrocursos.Models.Curso
+@{
+    ViewData["Title"] = "Editar curso";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-action="Index">Panel Admin</a></li>
+                    <li class="breadcrumb-item"><a asp-action="Cursos">Cursos</a></li>
+                    <li class="breadcrumb-item active">Editar</li>
+                </ol>
+            </nav>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h2 class="h4 fw-bold mb-0">
+                        <i class="bi bi-pencil-square me-2 text-warning"></i>Editar curso
+                    </h2>
+                    <span class="badge @(Model.EstaPublicado ? "bg-success" : "bg-warning text-dark")">
+                        @(Model.EstaPublicado ? "Publicado" : "Borrador")
+                    </span>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="EditarCurso" asp-route-id="@Model.Id" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="FechaCreacion" />
+                        <input type="hidden" asp-for="EstaPublicado" />
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Titulo" class="form-label fw-semibold"></label>
+                            <input asp-for="Titulo" class="form-control" />
+                            <span asp-validation-for="Titulo" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Descripcion" class="form-label fw-semibold"></label>
+                            <textarea asp-for="Descripcion" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Descripcion" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="Nivel" class="form-label fw-semibold"></label>
+                                <select asp-for="Nivel" class="form-select">
+                                    <option value="Básico">Básico</option>
+                                    <option value="Intermedio">Intermedio</option>
+                                    <option value="Avanzado">Avanzado</option>
+                                </select>
+                                <span asp-validation-for="Nivel" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Duracion" class="form-label fw-semibold">Duración (minutos)</label>
+                                <input asp-for="Duracion" type="number" min="1" max="10000" class="form-control" />
+                                <span asp-validation-for="Duracion" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-warning px-4">
+                                <i class="bi bi-save me-2"></i>Guardar cambios
+                            </button>
+                            <a asp-action="Lecciones" asp-route-id="@Model.Id" class="btn btn-outline-info">
+                                <i class="bi bi-list-ul me-2"></i>Gestionar lecciones
+                            </a>
+                            <a asp-action="Cursos" class="btn btn-outline-secondary ms-auto">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

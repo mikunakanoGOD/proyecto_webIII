@@ -1,0 +1,109 @@
+@model IEnumerable<PortalMicrocursos.Models.Curso>
+@{
+    ViewData["Title"] = "Gestionar Cursos";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="section-title mb-0">Gestionar Cursos</h1>
+        <a asp-action="CrearCurso" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>Nuevo curso
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-admin table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Título</th>
+                        <th>Nivel</th>
+                        <th>Duración</th>
+                        <th>Lecciones</th>
+                        <th>Estado</th>
+                        <th>Creado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var curso in Model)
+                    {
+                        <tr>
+                            <td class="text-muted small align-middle">@curso.Id</td>
+                            <td class="fw-semibold align-middle">@curso.Titulo</td>
+                            <td class="align-middle">
+                                @{
+                                    var badgeCls = curso.Nivel switch {
+                                        "Básico"      => "badge-basico",
+                                        "Intermedio"  => "badge-intermedio",
+                                        "Avanzado"    => "badge-avanzado",
+                                        _             => "bg-secondary"
+                                    };
+                                }
+                                <span class="badge @badgeCls">@curso.Nivel</span>
+                            </td>
+                            <td class="align-middle">@curso.Duracion min</td>
+                            <td class="align-middle text-center">@(curso.Lecciones?.Count ?? 0)</td>
+                            <td class="align-middle">
+                                @if (curso.EstaPublicado)
+                                {
+                                    <span class="badge bg-success"><i class="bi bi-globe me-1"></i>Publicado</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark"><i class="bi bi-pencil me-1"></i>Borrador</span>
+                                }
+                            </td>
+                            <td class="align-middle text-muted small">@curso.FechaCreacion.ToString("dd/MM/yyyy")</td>
+                            <td class="align-middle">
+                                <div class="d-flex gap-1 justify-content-center flex-wrap">
+                                    <!-- Editar -->
+                                    <a asp-action="EditarCurso" asp-route-id="@curso.Id"
+                                       class="btn btn-sm btn-outline-secondary" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+
+                                    <!-- Lecciones -->
+                                    <a asp-action="Lecciones" asp-route-id="@curso.Id"
+                                       class="btn btn-sm btn-outline-info" title="Gestionar lecciones">
+                                        <i class="bi bi-list-ul"></i>
+                                    </a>
+
+                                    <!-- Publicar / Despublicar -->
+                                    @if (curso.EstaPublicado)
+                                    {
+                                        <form asp-action="DespublicarCurso" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@curso.Id" />
+                                            <button type="submit" class="btn btn-sm btn-outline-warning" title="Despublicar"
+                                                    onclick="return confirm('¿Despublicar «@curso.Titulo»? Dejará de ser visible.')">
+                                                <i class="bi bi-eye-slash"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form asp-action="PublicarCurso" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@curso.Id" />
+                                            <button type="submit" class="btn btn-sm btn-outline-success" title="Publicar">
+                                                <i class="bi bi-globe"></i>
+                                            </button>
+                                        </form>
+                                    }
+
+                                    <!-- Eliminar -->
+                                    <a asp-action="EliminarCurso" asp-route-id="@curso.Id"
+                                       class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

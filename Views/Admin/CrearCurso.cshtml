@@ -1,0 +1,80 @@
+@model PortalMicrocursos.Models.Curso
+@{
+    ViewData["Title"] = "Crear curso";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-action="Index">Panel Admin</a></li>
+                    <li class="breadcrumb-item"><a asp-action="Cursos">Cursos</a></li>
+                    <li class="breadcrumb-item active">Nuevo curso</li>
+                </ol>
+            </nav>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h2 class="h4 fw-bold mb-0">
+                        <i class="bi bi-plus-circle me-2 text-primary"></i>Nuevo curso
+                    </h2>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="CrearCurso" method="post">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Titulo" class="form-label fw-semibold"></label>
+                            <input asp-for="Titulo" class="form-control" placeholder="Ej: Introducción a ASP.NET Core" />
+                            <span asp-validation-for="Titulo" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Descripcion" class="form-label fw-semibold"></label>
+                            <textarea asp-for="Descripcion" class="form-control" rows="4"
+                                      placeholder="Describe de qué trata el curso, qué aprenderán los estudiantes..."></textarea>
+                            <span asp-validation-for="Descripcion" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Nivel" class="form-label fw-semibold"></label>
+                                <select asp-for="Nivel" class="form-select">
+                                    <option value="Básico">Básico</option>
+                                    <option value="Intermedio">Intermedio</option>
+                                    <option value="Avanzado">Avanzado</option>
+                                </select>
+                                <span asp-validation-for="Nivel" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Duracion" class="form-label fw-semibold">Duración (minutos)</label>
+                                <input asp-for="Duracion" type="number" min="1" max="10000" class="form-control"
+                                       placeholder="Ej: 120" />
+                                <span asp-validation-for="Duracion" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info small">
+                            <i class="bi bi-info-circle me-2"></i>
+                            El curso se creará en estado <strong>Borrador</strong>. Para publicarlo deberás agregar al menos una lección primero.
+                        </div>
+
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-save me-2"></i>Crear curso
+                            </button>
+                            <a asp-action="Cursos" class="btn btn-outline-secondary">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
