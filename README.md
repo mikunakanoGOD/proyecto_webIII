@@ -1,181 +1,173 @@
-# Portal de Microcursos y Tutoriales
+# PortalMicrocursos
 
-## Información del Proyecto
+Portal web de microcursos construido con **ASP.NET Core MVC (.NET 10)**, **Entity Framework Core** y **ASP.NET Core Identity**.
 
-**Institución:** Universidad del Valle (Univalle)  
-**Materia:** Desarrollo Web III  
-**Semestre:** Cuarto Semestre  
+## Requisitos previos
 
-### Estudiantes
-- **Edwin Migurl Zambrana Siles**
-- **Abigael Erquicia Carvajal**
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
+- SQL Server / SQL Server LocalDB (incluido con Visual Studio)
+- Visual Studio 2022 o superior (recomendado) o VS Code
 
----
+## Configuración inicial
 
-## Descripción del Proyecto
+### 1. Clonar el repositorio
 
-Portal web diseñado para la publicación de microcursos y tutoriales técnicos dirigido a la comunidad de Univalle. El sistema permite a los visitantes visualizar el catálogo de cursos, mientras que los suscriptores pueden inscribirse y acceder al contenido completo de las lecciones.
+```bash
+git clone <url-del-repositorio>
+cd proyecto_webIII
+```
 
-### Tecnologías Utilizadas
+### 2. Configurar la cadena de conexión
 
-- **Backend:** ASP.NET Core (MVC)
-- **ORM:** Entity Framework Core
-- **Base de Datos:** SQL Server
-- **Autenticación:** ASP.NET Core Identity
-- **Frontend:** Razor Pages con HTML/CSS
+El archivo `appsettings.json` ya tiene configurada la cadena por defecto para **LocalDB**:
 
----
+```json
+"ConnectionStrings": {
+  "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=PortalMicursosDB;Trusted_Connection=true;MultipleActiveResultSets=true"
+}
+```
 
-## Funcionalidades por Rol
+Si usas SQL Server Express, cámbiala a:
+```json
+"DefaultConnection": "Server=.\\SQLEXPRESS;Database=PortalMicursosDB;Integrated Security=True;TrustServerCertificate=True"
+```
 
-### Invitado (Usuario no autenticado)
-- Ver el catálogo de cursos publicados
-- Consultar título, descripción, nivel y duración de cada curso
-- Ver una página de presentación de cada curso
-- **No puede** acceder a las lecciones completas
+### 3. Aplicar las migraciones
 
-### Suscriptor (Usuario autenticado)
-- Inscribirse en un curso gratuito
-- Consultar sus cursos inscritos
-- Acceder a las lecciones de sus cursos
-- Marcar una lección como completada
-- Consultar su progreso básico
+```bash
+dotnet ef database update
+```
+
+### 4. Ejecutar el proyecto
+
+```bash
+dotnet run
+```
+
+La primera ejecución ejecuta **SeedData** automáticamente y crea:
+- Los 3 roles: `Invitado`, `Suscriptor`, `Administrador`
+- Un usuario administrador de prueba
+- 3 cursos de ejemplo con lecciones
+
+## Credenciales de prueba
+
+| Rol           | Correo                           | Contraseña |
+|---------------|----------------------------------|------------|
+| Administrador | admin@portalmicursos.com         | Admin123   |
+| Suscriptor    | (crea una cuenta desde Register) | —          |
+
+> ⚠️ **Importante:** Cambia la contraseña del administrador en producción.
+
+## Estructura del proyecto
+
+```
+PortalMicrocursos/
+├── Controllers/
+│   ├── HomeController.cs          # Página principal con cursos destacados
+│   ├── AccountController.cs       # Login, Register, Logout, AccessDenied
+│   ├── CursosController.cs        # Catálogo público y detalle de curso
+│   ├── InscripcionesController.cs # Inscripción y Mis Cursos
+│   ├── LeccionesController.cs     # Visualización de lecciones
+│   ├── ProgresoController.cs      # Seguimiento de progreso
+│   └── AdminController.cs         # Panel de administración
+├── Models/
+│   ├── ApplicationUser.cs
+│   ├── Curso.cs
+│   ├── Leccion.cs
+│   ├── Inscripcion.cs
+│   ├── LeccionCompletada.cs
+│   └── RolesConstantes.cs
+├── ViewModels/
+│   ├── LoginViewModel.cs
+│   └── RegisterViewModel.cs
+├── Services/           # Lógica de negocio (interfaces + implementaciones)
+├── Repositories/       # Acceso a datos (patrón Repository + UnitOfWork)
+├── Data/               # ApplicationDbContext + SeedData
+├── Migrations/         # Migraciones EF Core
+└── Views/
+    ├── Home/           # Index, Privacy
+    ├── Account/        # Login, Register, AccessDenied
+    ├── Cursos/         # Index (catálogo), Detalle
+    ├── Inscripciones/  # MisCursos, Confirmacion
+    ├── Lecciones/      # Ver (contenido)
+    ├── Progreso/       # Detalle (progreso por curso)
+    ├── Admin/          # Panel, Cursos, CRUD, Lecciones, Suscriptores
+    └── Shared/         # _Layout, Error, _ValidationScriptsPartial
+```
+
+## Funcionalidades por rol
+
+### Invitado (no autenticado)
+- Ver página de inicio con cursos destacados
+- Explorar el catálogo con búsqueda y filtros por nivel
+- Ver el detalle de un curso (descripción, lista de lecciones bloqueadas)
+- Registrarse o iniciar sesión
+
+### Suscriptor (usuario registrado)
+- Todo lo anterior
+- Inscribirse en cursos publicados
+- Acceder a lecciones de cursos inscritos
+- Marcar lecciones como completadas
+- Ver barra de progreso por curso
+- Cancelar inscripciones
+- Ver progreso detallado por curso
 
 ### Administrador
-- Crear, editar y eliminar cursos
-- Agregar y ordenar las lecciones de un curso
-- Publicar o despublicar cursos
-- Consultar la lista de suscriptores inscritos en cada curso
+- Todo lo anterior
+- Panel de administración con estadísticas
+- CRUD completo de cursos (crear, editar, eliminar)
+- Publicar / despublicar cursos (requiere al menos 1 lección)
+- CRUD completo de lecciones (con contenido HTML)
+- Consultar suscriptores inscritos por curso
+- Acceso a lecciones sin necesidad de inscripción
 
----
+## Rutas principales
 
-## Modelo de Datos Principal
+| Ruta                              | Descripción                         | Acceso           |
+|-----------------------------------|-------------------------------------|------------------|
+| `/`                               | Página principal                    | Público          |
+| `/Cursos`                         | Catálogo de cursos                  | Público          |
+| `/Cursos/Detalle/{id}`            | Detalle de un curso                 | Público          |
+| `/Account/Login`                  | Iniciar sesión                      | Anónimo          |
+| `/Account/Register`               | Crear cuenta                        | Anónimo          |
+| `/Inscripciones/MisCursos`        | Mis cursos inscritos                | Suscriptor/Admin |
+| `/Inscripciones/Inscribir`        | POST: inscribirse en un curso       | Suscriptor/Admin |
+| `/Lecciones/Ver`                  | Ver contenido de una lección        | Suscriptor/Admin |
+| `/Progreso/Detalle/{id}`          | Progreso detallado por curso        | Suscriptor/Admin |
+| `/Admin`                          | Panel de administración             | Administrador    |
+| `/Admin/Cursos`                   | Gestionar cursos                    | Administrador    |
+| `/Admin/Suscriptores`             | Suscriptores por curso              | Administrador    |
 
-- **Curso:** Información del curso (título, descripción, nivel, duración, estado publicado)
-- **Lección:** Contenido de cada lección dentro de un curso
-- **Inscripción:** Relación entre usuario y curso
-- **LecciónCompletada:** Seguimiento del progreso del usuario
+## Reglas de negocio importantes
 
-Los usuarios y roles se gestionan mediante las tablas de **ASP.NET Core Identity**.
+1. Un curso **no puede publicarse** si no tiene al menos una lección.
+2. Un curso **no puede eliminarse** si tiene usuarios inscritos.
+3. Un usuario **no puede inscribirse dos veces** en el mismo curso.
+4. Solo usuarios con rol **Suscriptor o Administrador** pueden inscribirse.
+5. Las lecciones solo son accesibles para usuarios **inscritos** en el curso (o Administradores).
+6. Al registrarse, el usuario recibe automáticamente el rol **Suscriptor**.
 
----
+## Scripts de datos de prueba
 
-## Características de Seguridad
+Los datos de prueba se cargan automáticamente al iniciar la aplicación mediante `SeedData.cs`.
+Incluyen:
 
-- El sistema impide que un usuario no inscrito acceda al contenido de las lecciones protegidas, incluso si conoce la URL directa
-- Autenticación mediante ASP.NET Core Identity
-- Autorización basada en roles (Invitado, Suscriptor, Administrador)
-- Las inscripciones deben verificarse en el servidor antes de permitir el acceso
+- **3 cursos** de ejemplo (2 publicados, 1 en borrador)
+- Lecciones con contenido HTML en cada curso
+- Usuario administrador (`admin@portalmicursos.com` / `Admin123`)
 
----
-
-## Simplificaciones del Proyecto
-
-Para reducir el alcance del desarrollo, el contenido de las lecciones será **texto o HTML sencillo**, sin incluir:
-- Videos alojados
-- Pagos o certificaciones
-- Evaluaciones complejas
-
----
-
-## Justificación Técnica
-
-### ¿Por qué ASP.NET Core MVC?
-
-Elegimos **ASP.NET Core MVC** por las siguientes razones:
-
-1. **Arquitectura robusta:** El patrón MVC (Modelo-Vista-Controlador) permite separar claramente la lógica de negocio, la presentación y el control de flujo, facilitando el mantenimiento y escalabilidad del proyecto.
-
-2. **Integración nativa con Identity:** ASP.NET Core Identity ofrece un sistema completo de autenticación y autorización que se integra perfectamente con el framework, permitiendo gestionar usuarios, roles y claims de forma segura y estándar.
-
-3. **Entity Framework Core:** La integración con EF Core simplifica enormemente el acceso a datos, permitiendo trabajar con objetos .NET en lugar de SQL directo, con soporte para migraciones, relaciones y consultas LINQ.
-
-4. **Seguridad incorporada:** El framework incluye protecciones contra vulnerabilidades comunes como CSRF, XSS, SQL Injection, y facilita la implementación de políticas de autorización granulares.
-
-5. **Experiencia académica:** ASP.NET Core es ampliamente utilizado en la industria y su aprendizaje proporciona habilidades valiosas para el desarrollo profesional.
-
-6. **Ecosistema maduro:** Cuenta con excelente documentación, herramientas de desarrollo (Visual Studio), y una comunidad activa que facilita la resolución de problemas.
-
-### ¿Por qué no Razor Pages?
-
-Aunque Razor Pages es más simple para aplicaciones pequeñas, MVC ofrece mayor flexibilidad para un proyecto con múltiples roles, lógica de negocio compleja y potencial crecimiento futuro.
-
----
-
-## Instrucciones de Instalación
-
-### Requisitos Previos
-- .NET SDK 6.0 o superior
-- SQL Server (LocalDB o instancia completa)
-- Visual Studio 2022 o VS Code con extensiones de C#
-
-### Pasos de Instalación
-
-1. Clonar el repositorio:
-   ```bash
-   git clone <url-del-repositorio>
-   cd proyecto
-   ```
-
-2. Restaurar paquetes:
-   ```bash
-   dotnet restore
-   ```
-
-3. Configurar la cadena de conexión en `appsettings.json`
-
-4. Aplicar migraciones:
-   ```bash
-   dotnet ef database update
-   ```
-
-5. Ejecutar el proyecto:
-   ```bash
-   dotnet run
-   ```
-
-6. Abrir en el navegador: `https://localhost:5001`
-
----
-
-## Estructura del Proyecto
-
-```
-proyecto/
-├── Controllers/       # Controladores MVC
-├── Models/           # Entidades y ViewModels
-├── Views/            # Vistas Razor
-├── Data/             # DbContext y configuraciones
-├── Services/         # Lógica de negocio
-├── Repositories/     # Acceso a datos
-├── wwwroot/          # Archivos estáticos (CSS, JS, imágenes)
-└── README.md         # Este archivo
+Para recrear los datos desde cero:
+```bash
+dotnet ef database drop --force
+dotnet ef database update
+dotnet run
 ```
 
----
+## Tecnologías utilizadas
 
-## Progreso del Desarrollo
-
-### Commits Realizados
-- [x] **Commit 1:** Inicializar proyecto y configuración base
-- [x] **Commit 2:** Configurar Entity Framework y SQL Server
-- [x] **Commit 3:** Implementar modelos de datos (Parte 1)
-- [x] **Commit 4:** Implementar modelos de datos (Parte 2)
-- [x] **Commit 5:** Configurar ASP.NET Core Identity
-- [x] **Commit 6:** Crear migración inicial de base de datos
-- [x] **Commit 7:** Implementar repositorios (Parte 1)
-- [x] **Commit 8:** Implementar repositorios (Parte 2)
-- [x] **Commit 9:** Implementar servicios de negocio (Parte 1)
-- [x] **Commit 10:** Implementar servicios de negocio (Parte 2) - **BACKEND COMPLETO** ✅
-
----
-
-## Licencia
-
-Este proyecto es un trabajo académico para la Universidad del Valle.
-
----
-
-## Contacto
-
-Para preguntas o sugerencias sobre el proyecto, contactar a los estudiantes mencionados arriba.
+- ASP.NET Core MVC 10.0
+- Entity Framework Core 10.0 (SQL Server)
+- ASP.NET Core Identity
+- Bootstrap 5 + Bootstrap Icons
+- jQuery Validation (validación cliente)
+- Patrón Repository + Unit of Work
