@@ -407,3 +407,11 @@ hr { border-color: var(--rt-cream-d); opacity: 1; }
 .footer a { color: var(--rt-teal); }
 .footer a:hover { color: var(--rt-yellow); }
 body { margin-bottom: 0; }
+
+/* --- Vistas de admin y progreso: sobrescribir utilidades de Bootstrap --- */
+.bg-white { background-color: var(--rt-cream) !important; }
+.card-header.bg-white { background-color: var(--rt-purple) !important; color: var(--rt-cream) !important; }
+.card-footer.bg-white { background-color: transparent !important; }
+.card-header .text-muted, .card-header .text-dark { color: var(--rt-cream) !important; }
+.shadow-sm, .shadow { box-shadow: 4px 4px 0 var(--rt-navy-d) !important; }
+.rounded, .rounded-3, .rounded-4 { border-radius: 0 !important; }
