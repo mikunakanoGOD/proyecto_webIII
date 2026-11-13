@@ -89,7 +89,8 @@ hr { border-color: var(--rt-cream-d); opacity: 1; }
 }
 
 .navbar .dropdown-toggle::after { border-top-color: var(--rt-cream); }
-.navbar-toggler { border: 2px solid var(--rt-teal); border-radius: 0; background: var(--rt-cream); }
+.navbar-toggler { border: 2px solid var(--rt-teal); border-radius: 0; background: var(--rt-navy-d); padding: 6px 10px; }
+.navbar-toggler:focus { box-shadow: 3px 3px 0 var(--rt-teal); }
 
 .dropdown-menu {
     background: var(--rt-cream);
@@ -415,3 +416,7 @@ body { margin-bottom: 0; }
 .card-header .text-muted, .card-header .text-dark { color: var(--rt-cream) !important; }
 .shadow-sm, .shadow { box-shadow: 4px 4px 0 var(--rt-navy-d) !important; }
 .rounded, .rounded-3, .rounded-4 { border-radius: 0 !important; }
+
+/* Boton de volver */
+.barra-volver { margin-bottom: 0.75rem; }
+.barra-volver .btn { font-size: 1.1rem; padding: 4px 12px; }
