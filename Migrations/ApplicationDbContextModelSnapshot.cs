@@ -264,9 +264,20 @@ namespace PortalMicrocursos.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EstaPublicado");
+                    b.HasIndex("EstaPublicado")
+                        .HasDatabaseName("IX_Cursos_EstaPublicado");
 
-                    b.HasIndex("Titulo");
+                    b.HasIndex("FechaCreacion")
+                        .HasDatabaseName("IX_Cursos_FechaCreacion");
+
+                    b.HasIndex("Nivel")
+                        .HasDatabaseName("IX_Cursos_Nivel");
+
+                    b.HasIndex("Titulo")
+                        .HasDatabaseName("IX_Cursos_Titulo");
+
+                    b.HasIndex("EstaPublicado", "Nivel")
+                        .HasDatabaseName("IX_Cursos_Publicado_Nivel");
 
                     b.ToTable("Cursos");
                 });
@@ -293,10 +304,18 @@ namespace PortalMicrocursos.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CursoId");
+                    b.HasIndex("CursoId")
+                        .HasDatabaseName("IX_Inscripciones_CursoId");
+
+                    b.HasIndex("FechaInscripcion")
+                        .HasDatabaseName("IX_Inscripciones_FechaInscripcion");
+
+                    b.HasIndex("UsuarioId")
+                        .HasDatabaseName("IX_Inscripciones_UsuarioId");
 
                     b.HasIndex("UsuarioId", "CursoId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("IX_Inscripciones_Usuario_Curso");
 
                     b.ToTable("Inscripciones");
                 });
@@ -326,8 +345,12 @@ namespace PortalMicrocursos.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CursoId")
+                        .HasDatabaseName("IX_Lecciones_CursoId");
+
                     b.HasIndex("CursoId", "Orden")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("IX_Lecciones_Curso_Orden");
 
                     b.ToTable("Lecciones");
                 });
@@ -354,10 +377,18 @@ namespace PortalMicrocursos.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LeccionId");
+                    b.HasIndex("FechaCompletada")
+                        .HasDatabaseName("IX_LeccionesCompletadas_FechaCompletada");
+
+                    b.HasIndex("LeccionId")
+                        .HasDatabaseName("IX_LeccionesCompletadas_LeccionId");
+
+                    b.HasIndex("UsuarioId")
+                        .HasDatabaseName("IX_LeccionesCompletadas_UsuarioId");
 
                     b.HasIndex("UsuarioId", "LeccionId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("IX_LeccionesCompletadas_Usuario_Leccion");
 
                     b.ToTable("LeccionesCompletadas");
                 });
