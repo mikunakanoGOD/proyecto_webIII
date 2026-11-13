@@ -3,10 +3,17 @@
     ViewData["Title"] = Model.Titulo;
     bool estaInscrito = (bool)(ViewData["EstaInscrito"] ?? false);
     int totalInscritos = (int)(ViewData["TotalInscritos"] ?? 0);
+    var badgeClass = Model.Nivel switch {
+        "Básico" => "badge-basico",
+        "Intermedio" => "badge-intermedio",
+        "Avanzado" => "badge-avanzado",
+        _ => "bg-secondary"
+    };
+    var lecciones = (Model.Lecciones ?? new List<PortalMicrocursos.Models.Leccion>()).OrderBy(l => l.Orden).ToList();
 }
 
 <div class="container py-4">
-    <!-- Breadcrumb -->
+    <!-- Migas de pan -->
     <nav aria-label="breadcrumb" class="mb-3">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Inicio</a></li>
@@ -18,84 +25,55 @@
     <div class="row g-4">
         <!-- Columna principal -->
         <div class="col-lg-8">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header py-4"
-                     style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white;">
-                    @{
-                        var badgeClass = Model.Nivel switch {
-                            "Básico" => "badge-basico",
-                            "Intermedio" => "badge-intermedio",
-                            "Avanzado" => "badge-avanzado",
-                            _ => "bg-secondary"
-                        };
-                    }
-                    <span class="badge @badgeClass mb-2">@Model.Nivel</span>
-                    <h1 class="h2 fw-bold mb-0">@Model.Titulo</h1>
-                </div>
+            <div class="card mb-4">
+                <div class="card-header"><span>curso_@(Model.Id).html</span><span class="float-end">_ □ x</span></div>
                 <div class="card-body p-4">
-                    <h5 class="fw-bold mb-3"><i class="bi bi-info-circle me-2 text-primary"></i>Descripción</h5>
-                    <p class="text-muted" style="line-height:1.8;">@Model.Descripcion</p>
-
-                    <!-- Estadísticas del curso -->
-                    <div class="row text-center my-4 g-3">
-                        <div class="col-4">
-                            <div class="p-3 bg-light rounded">
-                                <i class="bi bi-clock-fill text-primary" style="font-size:1.5rem"></i>
-                                <div class="fw-bold mt-1">@Model.Duracion min</div>
-                                <div class="text-muted small">Duración</div>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="p-3 bg-light rounded">
-                                <i class="bi bi-list-ul text-success" style="font-size:1.5rem"></i>
-                                <div class="fw-bold mt-1">@(Model.Lecciones?.Count ?? 0)</div>
-                                <div class="text-muted small">Lecciones</div>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="p-3 bg-light rounded">
-                                <i class="bi bi-people-fill text-warning" style="font-size:1.5rem"></i>
-                                <div class="fw-bold mt-1">@totalInscritos</div>
-                                <div class="text-muted small">Inscritos</div>
-                            </div>
-                        </div>
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <span class="badge @badgeClass">@Model.Nivel</span>
+                        <span class="chip-info"><i class="bi bi-clock me-1"></i>@Model.Duracion min</span>
+                        <span class="chip-info"><i class="bi bi-list-ul me-1"></i>@lecciones.Count lecciones</span>
+                        <span class="chip-info"><i class="bi bi-people-fill me-1"></i>@totalInscritos inscritos</span>
                     </div>
-
-                    <!-- Lista de lecciones (preview) -->
-                    @if (Model.Lecciones != null && Model.Lecciones.Any())
-                    {
-                        <h5 class="fw-bold mb-3"><i class="bi bi-collection-play me-2 text-primary"></i>Contenido del curso</h5>
-                        <div class="list-group list-group-flush">
-                            @foreach (var leccion in Model.Lecciones.OrderBy(l => l.Orden))
-                            {
-                                <div class="list-group-item d-flex align-items-center gap-3 px-0">
-                                    @if (estaInscrito)
-                                    {
-                                        <a asp-controller="Lecciones" asp-action="Ver"
-                                           asp-route-cursoId="@Model.Id" asp-route-leccionId="@leccion.Id"
-                                           class="d-flex align-items-center gap-3 text-decoration-none text-dark w-100">
-                                            <span class="badge bg-primary rounded-circle" style="min-width:28px">@leccion.Orden</span>
-                                            <span class="flex-grow-1">@leccion.Titulo</span>
-                                            <i class="bi bi-chevron-right text-muted"></i>
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-secondary rounded-circle" style="min-width:28px">@leccion.Orden</span>
-                                        <span class="flex-grow-1 text-muted">@leccion.Titulo</span>
-                                        <i class="bi bi-lock text-muted"></i>
-                                    }
-                                </div>
-                            }
-                        </div>
-                    }
+                    <h1 class="h3 mb-3" style="color:#4b3a9c">@Model.Titulo</h1>
+                    <p style="line-height:1.8;">@Model.Descripcion</p>
                 </div>
             </div>
+
+            <!-- Lecciones como explorador de archivos -->
+            @if (lecciones.Any())
+            {
+                <div class="card">
+                    <div class="card-header"><span>C:\curso_@(Model.Id)\lecciones</span><span class="float-end">_ □ x</span></div>
+                    @foreach (var leccion in lecciones)
+                    {
+                        if (estaInscrito)
+                        {
+                            <div class="explorer-row">
+                                <a asp-controller="Lecciones" asp-action="Ver"
+                                   asp-route-cursoId="@Model.Id" asp-route-leccionId="@leccion.Id">
+                                    <span class="ico">@leccion.Orden</span>
+                                    <span>@leccion.Titulo</span>
+                                    <span class="estado" style="color:#1e8a8f">ABRIR &gt;</span>
+                                </a>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="explorer-row bloqueada">
+                                <span class="ico">@leccion.Orden</span>
+                                <span>@leccion.Titulo</span>
+                                <span class="estado"><i class="bi bi-lock-fill"></i> Bloqueada</span>
+                            </div>
+                        }
+                    }
+                </div>
+            }
         </div>
 
         <!-- Panel lateral -->
         <div class="col-lg-4">
-            <div class="card border-0 shadow-sm sticky-top" style="top: 80px;">
+            <div class="card sticky-top" style="top: 80px;">
+                <div class="card-header"><span>inscripcion.exe</span><span class="float-end">■</span></div>
                 <div class="card-body p-4">
                     @if (!Model.EstaPublicado)
                     {
@@ -112,12 +90,12 @@
                                 <i class="bi bi-check-circle-fill text-success" style="font-size:2.5rem"></i>
                                 <p class="fw-semibold mt-2 text-success">¡Ya estás inscrito!</p>
                             </div>
-                            @if (Model.Lecciones != null && Model.Lecciones.Any())
+                            @if (lecciones.Any())
                             {
-                                var primeraLeccion = Model.Lecciones.OrderBy(l => l.Orden).First();
+                                var primeraLeccion = lecciones.First();
                                 <a asp-controller="Lecciones" asp-action="Ver"
                                    asp-route-cursoId="@Model.Id" asp-route-leccionId="@primeraLeccion.Id"
-                                   class="btn btn-success w-100 py-2 fw-semibold">
+                                   class="btn btn-success w-100 py-2">
                                     <i class="bi bi-play-fill me-2"></i>Continuar aprendiendo
                                 </a>
                             }
@@ -128,7 +106,7 @@
                             <form asp-controller="Inscripciones" asp-action="Inscribir" method="post">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="cursoId" value="@Model.Id" />
-                                <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
+                                <button type="submit" class="btn btn-primary w-100 py-2">
                                     <i class="bi bi-person-check me-2"></i>Inscribirme ahora
                                 </button>
                             </form>
@@ -139,7 +117,7 @@
                         <p class="text-muted mb-3">Inicia sesión o crea una cuenta para inscribirte en este curso.</p>
                         <a asp-controller="Account" asp-action="Login"
                            asp-route-returnUrl="@Context.Request.Path"
-                           class="btn btn-primary w-100 py-2 fw-semibold mb-2">
+                           class="btn btn-primary w-100 py-2 mb-2">
                             <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar sesión
                         </a>
                         <a asp-controller="Account" asp-action="Register"
@@ -151,7 +129,8 @@
                     <hr class="my-3" />
                     <div class="text-muted small">
                         <p class="mb-1"><i class="bi bi-calendar3 me-2"></i>Publicado: @Model.FechaCreacion.ToString("dd MMMM yyyy")</p>
-                        <p class="mb-0"><i class="bi bi-award me-2"></i>Nivel: @Model.Nivel</p>
+                        <p class="mb-1"><i class="bi bi-award me-2"></i>Nivel: @Model.Nivel</p>
+                        <p class="mb-0"><i class="bi bi-cash-coin me-2"></i>Costo: gratis</p>
                     </div>
                 </div>
             </div>
