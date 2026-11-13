@@ -2,6 +2,13 @@
 
 Portal web de microcursos construido con **ASP.NET Core MVC (.NET 10)**, **Entity Framework Core** y **ASP.NET Core Identity**.
 
+## Equipo
+
+| Integrante | Rol |
+|------------|-----|
+| Abigael Erquica Carvajal | Frontend |
+| Edwin Miguel Zambrana Siles | Backend |
+
 ## Requisitos previos
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
